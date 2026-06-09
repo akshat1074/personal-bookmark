@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  handle     String   @unique
+  name       String?
+  avatarUrl  String?
+  bio        String?
+  website    String?
+  twitter    String?
+  github     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  bookmarks  Bookmark[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String
+  url         String
+  description String?
+  faviconUrl  String?
+  ogImageUrl  String?
+  isPublic    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, isPublic])
+  @@map("bookmarks")
+}
